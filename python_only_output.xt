@@ -1,0 +1,100 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOY99sWQYd4+ri6J2hZLnkE",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/ThammineniHemanthChowdary/Task_04_Descriptive_Stats/blob/main/python_only_output.xt\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "id": "hlmE7url4jD_"
+      },
+      "outputs": [],
+      "source": [
+        "# Script 1: pure_python_stats.py\n",
+        "import csv\n",
+        "from collections import defaultdict, Counter\n",
+        "from statistics import mean, stdev\n",
+        "import json\n",
+        "\n",
+        "def is_float(s):\n",
+        "    try:\n",
+        "        float(s)\n",
+        "        return True\n",
+        "    except:\n",
+        "        return False\n",
+        "\n",
+        "def summarize_numeric(values):\n",
+        "    nums = [float(v) for v in values if is_float(v)]\n",
+        "    return {\n",
+        "        'count': len(nums),\n",
+        "        'mean': mean(nums) if nums else None,\n",
+        "        'min': min(nums) if nums else None,\n",
+        "        'max': max(nums) if nums else None,\n",
+        "        'stdev': stdev(nums) if len(nums) > 1 else 0.0\n",
+        "    }\n",
+        "\n",
+        "def summarize_categorical(values):\n",
+        "    counts = Counter(values)\n",
+        "    return {\n",
+        "        'count': len(values),\n",
+        "        'unique': len(counts),\n",
+        "        'most_common': counts.most_common(1)[0] if counts else None\n",
+        "    }\n",
+        "\n",
+        "def read_csv(path):\n",
+        "    with open(path, newline='', encoding='utf-8') as f:\n",
+        "        reader = csv.DictReader(f)\n",
+        "        return list(reader)\n",
+        "\n",
+        "def analyze(data):\n",
+        "    summary = {}\n",
+        "    for col in data[0].keys():\n",
+        "        values = [row[col] for row in data if row[col] not in ['', None]]\n",
+        "        summary[col] = summarize_numeric(values) if all(is_float(v) for v in values) else summarize_categorical(values)\n",
+        "    return summary\n",
+        "\n",
+        "def group_by(data, key):\n",
+        "    grouped = defaultdict(list)\n",
+        "    for row in data:\n",
+        "        grouped[row[key]].append(row)\n",
+        "    return grouped\n",
+        "\n",
+        "if __name__ == '__main__':\n",
+        "    data = read_csv('/content/2024_fb_ads_president_scored_anon.csv')\n",
+        "    with open(\"python_only_output.txt\", \"w\", encoding=\"utf-8\") as f:\n",
+        "        f.write(\"Overall Summary:\\n\")\n",
+        "        f.write(json.dumps(analyze(data), indent=2))\n",
+        "\n",
+        "        f.write(\"\\n\\nGrouped by page_id (first 3 shown):\\n\")\n",
+        "        grouped = group_by(data, 'page_id')\n",
+        "        for group, records in list(grouped.items())[:3]:\n",
+        "            f.write(f\"\\nGroup: {group}\\n\")\n",
+        "            f.write(json.dumps(analyze(records), indent=2))\n"
+      ]
+    }
+  ]
+}
