@@ -1,0 +1,31 @@
+# Ignore dataset files (do not commit raw data)
+
+\*.csv
+\*.tsv
+\*.xlsx
+
+# Ignore any output or intermediate data outside /Output/
+
+\*.json
+\*.parquet
+\*.feather
+
+# Ignore notebook checkpoints and system files
+
+.ipynb\_checkpoints/
+.DS\_Store
+Thumbs.db
+
+# Ignore virtual environment and package files
+
+.env
+.venv
+**pycache**/
+\*.pyc
+\*.pyo
+\*.pyd
+
+# Allow output directory but ignore its hidden/system files
+
+!Output/
+Output/.\*
